@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_utils_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 03:29:05 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/04/30 20:05:44 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/18 17:46:50 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ int	**create_pipes(int n_cmds)
 	{
 		pipes[i] = malloc(sizeof(int) * 2);
 		if (!pipes[i] || pipe(pipes[i]) == -1)
-			return (NULL);
+			return (free_pipes(pipes, i + 1), NULL);
 		i++;
 	}
 	return (pipes);
@@ -87,7 +87,7 @@ t_pipex	*init_pipex(int ac, char **av)
 		return (perror(av[ac - 1]), free_pipex(px));
 	px->head = create_cmd_list(ac, av);
 	if (!px->head)
-		return (error("pipex", "Failed to create command list.", NULL), free_pipex(px));
+		return (free_pipex(px));
 	px->last_exit = 0;
 	px->n_cmds = count_cmds(px->head);
 	px->pipes = create_pipes(px->n_cmds);
