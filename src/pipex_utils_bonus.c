@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 03:29:05 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/18 17:46:50 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/18 18:00:38 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ t_pipex	*init_pipex(int ac, char **av)
 		perror(av[1]);
 		px->infile = open("/dev/null", O_RDONLY);
 		if (px->infile < 0)
-			error("infile", "/dev/null fallback failed.", "1");
+			return (perror("/dev/null"), free_pipex(px));
 	}
 	if (px->outfile < 0)
 		return (perror(av[ac - 1]), free_pipex(px));
