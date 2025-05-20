@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 00:57:27 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/04/29 15:30:20 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/20 21:57:19 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
