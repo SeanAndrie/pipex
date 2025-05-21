@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 15:39:48 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/18 18:00:50 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/21 12:48:28 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

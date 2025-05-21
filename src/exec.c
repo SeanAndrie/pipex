@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 19:12:14 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/20 22:05:48 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/21 13:17:18 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	error(char *type, char *message, char *exit_code)
 		exit(ft_atoi(exit_code));
 }
 
-void	wait_for_children(t_pipex *px)
+void	wait_for_children(t_pipex *px, pid_t *pids)
 {
 	int	i;
 	int	status;
@@ -29,7 +29,7 @@ void	wait_for_children(t_pipex *px)
 	i = 0;
 	while (i < px->n_cmds)
 	{
-		wait(&status);
+		waitpid(pids[i], &status, 0);
 		if (WIFEXITED(status))
 			px->last_exit = WEXITSTATUS(status);
 		i++;
@@ -53,14 +53,14 @@ int	execute_w_execve(char *cmd, char **envp)
 		return (0);
 	}
 	if (execve(cmd_path, args, envp) == -1)
-		return (0);
-	free(cmd_path);
-	free_array(args);
-	return (1);
+		return (free(cmd_path), free_array(args), 0);
+	return (free(cmd_path), free_array(args), 1);
 }
 
 void	child_process(t_pipex *px, t_command *node, char **envp, int i)
 {
+	int	err;
+
 	if (i == 0)
 		dup2(px->infile, STDIN_FILENO);
 	else
@@ -72,10 +72,11 @@ void	child_process(t_pipex *px, t_command *node, char **envp, int i)
 	close_pipes(px->pipes, px->n_cmds);
 	if (!execute_w_execve(node->cmd, envp))
 	{
+		err = errno;
 		free_pipex(px);
-		if (errno == ENOENT)
+		if (err == ENOENT)
 			error("pipex", "Command not found.", "127");
-		else if (errno == EACCES)
+		else if (err == EACCES)
 			error("pipex", "Permission denied.", "126");
 		else
 			error("pipex", "Execution failed.", "1");
@@ -85,24 +86,31 @@ void	child_process(t_pipex *px, t_command *node, char **envp, int i)
 void	run_pipex(t_pipex *px, char **envp)
 {
 	int			i;
-	pid_t		pid;
 	t_command	*curr;
+	pid_t		*pids;
 
+	pids = malloc(sizeof(pid_t) * px->n_cmds);
+	if (!pids)
+	{
+		px->last_exit = 1;
+		return ;
+	}
 	i = 0;
 	curr = px->head;
 	while (curr)
 	{
-		pid = fork();
-		if (pid < 0)
+		pids[i] = fork();
+		if (pids[i] < 0)
 		{
 			free_pipex(px);
 			error("pipex", "Fork failed", "1");
 		}
-		else if (pid == 0)
+		else if (pids[i] == 0)
 			child_process(px, curr, envp, i);
 		curr = curr->next;
 		i++;
 	}
 	close_pipes(px->pipes, px->n_cmds);
-	wait_for_children(px);
+	wait_for_children(px, pids);
+	free(pids);
 }
