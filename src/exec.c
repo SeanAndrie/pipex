@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 19:12:14 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/21 13:17:18 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:25:29 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	error(char *type, char *message, char *exit_code)
+void	error(char *type, char *message, char *exit_code, t_pipex *px)
 {
+	if (px)
+		free_pipex(px);
 	ft_putstr_fd(type, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(message, 2);
@@ -73,13 +75,12 @@ void	child_process(t_pipex *px, t_command *node, char **envp, int i)
 	if (!execute_w_execve(node->cmd, envp))
 	{
 		err = errno;
-		free_pipex(px);
 		if (err == ENOENT)
-			error("pipex", "Command not found.", "127");
+			error("pipex", "Command not found.", "127", px);
 		else if (err == EACCES)
-			error("pipex", "Permission denied.", "126");
+			error("pipex", "Permission denied.", "126", px);
 		else
-			error("pipex", "Execution failed.", "1");
+			error("pipex", "Execution failed.", "1", px);
 	}
 }
 
@@ -91,10 +92,7 @@ void	run_pipex(t_pipex *px, char **envp)
 
 	pids = malloc(sizeof(pid_t) * px->n_cmds);
 	if (!pids)
-	{
-		px->last_exit = 1;
-		return ;
-	}
+		error("pipex", "PID array malloc failed.", "1", px);
 	i = 0;
 	curr = px->head;
 	while (curr)
@@ -102,8 +100,8 @@ void	run_pipex(t_pipex *px, char **envp)
 		pids[i] = fork();
 		if (pids[i] < 0)
 		{
-			free_pipex(px);
-			error("pipex", "Fork failed", "1");
+			free(pids);
+			error("pipex", "Fork failed", "1", px);
 		}
 		else if (pids[i] == 0)
 			child_process(px, curr, envp, i);

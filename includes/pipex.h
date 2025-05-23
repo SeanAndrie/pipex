@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 01:21:33 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/21 12:38:59 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/23 15:05:22 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,9 @@ typedef struct s_command
 	struct s_command	*next;
 }						t_command;
 
-void					error(char *type, char *message, char *exit_code);
+void					error(char *type, char *message, char *exit_code,
+							t_pipex *px);
+
 // here_doc
 int						process_heredoc(char *limiter);
 void					normal_or_heredoc(t_pipex *px, int *ac, char ***av);

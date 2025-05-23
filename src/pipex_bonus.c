@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 00:57:27 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/21 12:59:58 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/23 14:56:01 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	process_heredoc(char *limiter)
 	size_t	limit_len;
 
 	if (pipe(fd) == -1)
-		error("pipex", "Failed to create pipe.", "1");
+		error("pipex", "Failed to create pipe.", "1", NULL);
 	limit_len = ft_strlen(limiter);
 	while (1)
 	{
@@ -60,7 +60,7 @@ int	main(int ac, char **av, char **envp)
 	int		status;
 
 	if (!envp || !*envp)
-		error("pipex", "Environment is not set.", "1");
+		error("pipex", "Environment is not set.", "1", NULL);
 	if (ac < 5)
 	{
 		ft_putstr_fd("pipex: usage:\n./pipex infile cmd1 cmd2 ... outfile\n",
