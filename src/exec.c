@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 19:12:14 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/23 15:25:29 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/23 23:04:45 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,23 @@ int	execute_w_execve(char *cmd, char **envp)
 	args = ft_split(cmd, ' ');
 	if (!args)
 		return (0);
+	if (ft_strchr(args[0], '/'))
+	{
+		if (!access(args[0], X_OK))
+		{
+			if (execve(args[0], args, envp) == -1)
+				perror("execve");
+		}
+		else
+			perror("access");
+		return (free_array(args), 0);
+	}
 	cmd_path = find_cmd_path(args[0], envp);
 	if (!cmd_path)
-	{
-		free_array(args);
-		return (0);
-	}
+		return (free_array(args), 0);
 	if (execve(cmd_path, args, envp) == -1)
-		return (free(cmd_path), free_array(args), 0);
-	return (free(cmd_path), free_array(args), 1);
+		return (free_array(args), free(cmd_path), 0);
+	return (1);
 }
 
 void	child_process(t_pipex *px, t_command *node, char **envp, int i)

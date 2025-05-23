@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 03:29:05 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/18 18:00:38 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/23 23:30:15 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,6 @@ void	close_pipes(int **pipes, int n_cmds)
 	}
 }
 
-void	free_pipes(int **pipes, int n_cmds)
-{
-	int	i;
-
-	i = 0;
-	while (i < n_cmds - 1)
-		free(pipes[i++]);
-	free(pipes);
-}
-
 void	*free_pipex(t_pipex *px)
 {
 	if (px->infile >= 0)
@@ -44,7 +34,7 @@ void	*free_pipex(t_pipex *px)
 	if (px->head)
 		free_cmds(px->head);
 	if (px->pipes)
-		free_pipes(px->pipes, px->n_cmds);
+		free(px->pipes);
 	free(px);
 	return (NULL);
 }
@@ -52,18 +42,20 @@ void	*free_pipex(t_pipex *px)
 int	**create_pipes(int n_cmds)
 {
 	int	i;
+	int	*fds;
 	int	**pipes;
 
-	pipes = malloc(sizeof(int *) * (n_cmds - 1));
+	pipes = malloc(sizeof(int *) * (n_cmds - 1) + sizeof(int) * 2 * (n_cmds
+				- 1));
 	if (!pipes)
 		return (NULL);
-	i = 0;
-	while (i < n_cmds - 1)
+	fds = (int *)(pipes + (n_cmds - 1));
+	i = -1;
+	while (++i < (n_cmds - 1))
 	{
-		pipes[i] = malloc(sizeof(int) * 2);
-		if (!pipes[i] || pipe(pipes[i]) == -1)
-			return (free_pipes(pipes, i + 1), NULL);
-		i++;
+		pipes[i] = &fds[i * 2];
+		if (pipe(pipes[i]) == -1)
+			return (free(pipes), NULL);
 	}
 	return (pipes);
 }
