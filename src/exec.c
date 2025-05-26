@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 19:12:14 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/26 20:09:07 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/26 20:38:07 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,22 +57,22 @@ void	setup_redirections(t_pipex *px, int i)
 	if (i == 0)
 	{
 		if (dup2(px->infile, STDIN_FILENO) == -1)
-			perror("dup2 infile");
+			exit(EXIT_FAILURE);
 	}
 	else
 	{
 		if (dup2(px->pipes[i - 1][0], STDIN_FILENO) == -1)
-			perror("dup2 write end");
+			exit(EXIT_FAILURE);
 	}
 	if (i < px->n_cmds - 1)
 	{
 		if (dup2(px->pipes[i][1], STDOUT_FILENO) == -1)
-			perror("dup2 read end");
+			exit(EXIT_FAILURE);	
 	}
 	else
 	{
 		if (dup2(px->outfile, STDOUT_FILENO) == -1)
-			perror("dup2 outfile");
+			exit(EXIT_FAILURE);
 	}
 }
 
