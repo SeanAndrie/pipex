@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:23:34 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/04/29 15:23:07 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/26 11:55:08 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,15 +54,13 @@ char	*ft_strjoinv(int n, ...)
 
 char	*find_path(char **envp)
 {
-	int		i;
-	char	*path;
+	int	i;
 
 	i = -1;
 	while (envp[++i])
 	{
-		path = ft_strnstr(envp[i], "PATH=", ft_strlen(envp[i]));
-		if (path)
-			return (ft_strdup(path + 5));
+		if (!ft_strncmp(envp[i], "PATH=", 5))
+			return (ft_strdup(envp[i] + 5));
 	}
 	return (NULL);
 }
