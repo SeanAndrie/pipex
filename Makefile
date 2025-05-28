@@ -5,39 +5,36 @@
 #                                                     +:+ +:+         +:+      #
 #    By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/04/08 16:19:12 by sgadinga          #+#    #+#              #
-#    Updated: 2025/05/26 13:28:43 by sgadinga         ###   ########.fr        #
+#    Created: 2025/05/27 15:43:34 by sgadinga          #+#    #+#              #
+#    Updated: 2025/05/28 16:01:01 by sgadinga         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
-BNAME = pipex_bonus
-CC = cc 
-CFLAGS = -Wall -Werror -Wextra -Ilibft/includes -Iincludes
+BONUS = pipex_bonus
+CC = cc
+CFLAGS = -Wall -Werror -Wextra -Iincludes -Ilibft/includes
 
 SRC_DIR = src
 OBJ_DIR = obj
 
-CORE_SRCS = path_utils.c cmd_ops.c exec.c pipex_utils.c
-SRCS = $(addprefix $(SRC_DIR)/, \
-		 pipex.c $(CORE_SRCS)) 
-BSRCS = $(addprefix $(SRC_DIR)/, \
-		  pipex_bonus.c $(CORE_SRCS))
+CORE = pipex_utils.c pipex_exec.c command_utils.c debug.c path_utils.c io_handler.c heredoc_utils.c
+SRCS = $(addprefix $(SRC_DIR)/, pipex.c $(CORE))
+BSRCS = $(addprefix $(SRC_DIR)/, pipex_bonus.c $(CORE))
 
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 BOBJS = $(BSRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 all: libft $(NAME)
-bonus: libft $(BNAME)
 
-libft: 
+libft:
 	@make -C libft
 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -Llibft -lft
 
-$(BNAME): $(BOBJS)
-	$(CC) $(CFLAGS) -o $(BNAME) $(BOBJS) -Llibft -lft
+bonus: $(BOBJS)
+	$(CC) $(CFLAGS) -o $(BONUS) $(BOBJS) -Llibft -lft
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
@@ -48,9 +45,9 @@ clean:
 	@make -C libft clean
 
 fclean: clean
-	@rm -f $(NAME) $(BNAME)
+	@rm -f $(NAME) $(BONUS)
 	@make -C libft fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re libft
+.PHONY: all clean fclean re libft 

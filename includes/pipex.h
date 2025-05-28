@@ -5,65 +5,74 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/09 01:21:33 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/26 16:32:20 by sgadinga         ###   ########.fr       */
+/*   Created: 2025/05/27 15:52:08 by sgadinga          #+#    #+#             */
+/*   Updated: 2025/05/28 15:40:28 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "../libft/includes/ft_printf.h"
 # include <errno.h>
 # include <fcntl.h>
+# include <libft.h>
 # include <stdarg.h>
 # include <stdio.h>
-# include <stdlib.h>
 # include <sys/wait.h>
-# include <unistd.h>
 
-typedef struct s_pipex
-{
-	struct s_command	*head;
-	int					n_cmds;
-	int					infile;
-	int					outfile;
-	int					**pipes;
-	int					last_exit;
-	pid_t				*pids;
-}						t_pipex;
+# define STDIN_FILENO 0
+# define STDOUT_FILENO 1
+# define STDERR_FILENO 2
+# define MAX_HEREDOC_SIZE 65536
 
 typedef struct s_command
 {
-	char				*cmd;
-	struct s_command	*prev;
+	char				*name;
 	struct s_command	*next;
 }						t_command;
 
-// Pipe Execution
-void					run_pipex(t_pipex *px, char **envp);
+typedef struct s_pipex
+{
+	char				*infile;
+	char				*outfile;
+	pid_t				*pids;
+	int					n_cmds;
+	int					**pipes;
+	int					here_doc;
+	int					last_exit;
+	struct s_command	*head;
+}						t_pipex;
 
-// Utilities
-void					*free_pipex(t_pipex *px);
-void					close_pipes(int **pipes, int n_cmds);
-void					close_files(int *infile, int *outfile);
-int						**create_pipes(int n_cmds);
-void					error(char *type, char *message, char *exit_code,
-							t_pipex *px);
-
-// HereDoc Handler
-int						process_heredoc(char *limiter);
+// here_doc
+void					cleanup_fds(t_pipex *px, int free_px);
 void					normal_or_heredoc(t_pipex *px, int *ac, char ***av);
 
-// Command Operations
-int						count_cmds(t_command *head);
-void					free_cmds(t_command *head);
-t_command				*create_cmd_list(int ac, char **av);
+// Pipex Execution
+void					parent_process(t_pipex *px, char **env);
+
+// Pipex Utilities
+t_pipex					*init_pipex(int ac, char **av);
+void					*free_pipex(t_pipex *px);
+void					create_pipes(t_pipex *px);
+void					close_pipes(t_pipex *px);
+
+// I/O Handling
+void					set_infile(t_pipex *px);
+void					set_outfile(t_pipex *px);
 
 // Path Utilities
-void					*free_array(char **array);
-char					*find_path(char **envp);
-char					*ft_strjoinv(int n, ...);
-char					*find_cmd_path(char *cmd, char **envp);
+void					*free_tokens(char **tokens);
+char					*find_cmd_path(char *cmd, char **env);
+
+// Command Utilities
+void					free_commands(t_command *head);
+int						count_commands(t_command *head);
+t_command				*create_commands(int ac, char **av);
+
+// Debug
+void					print_env(char **env);
+void					print_pipex_attr(t_pipex *px);
+void					print_commands(t_command *head);
+void					exit_on_err(char *context, char *message, int code);
 
 #endif

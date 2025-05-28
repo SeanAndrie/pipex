@@ -5,82 +5,120 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/26 10:57:29 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/26 20:13:34 by sgadinga         ###   ########.fr       */
+/*   Created: 2025/05/27 16:17:41 by sgadinga          #+#    #+#             */
+/*   Updated: 2025/05/28 16:22:18 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <pipex.h>
 
-void	close_pipes(int **pipes, int n_cmds)
+void	cleanup_fds(t_pipex *px, int free_px)
+{
+	if (px)
+	{
+		close_pipes(px);
+		if (px->here_doc != -1)
+		{
+			close(px->here_doc);
+			px->here_doc = -1;
+		}
+		if (free_px)
+			free_pipex(px);
+	}
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+}
+
+void	close_pipes(t_pipex *px)
 {
 	int	i;
 
-	i = 0;
-	while (i < n_cmds - 1)
+	if (!px || !px->pipes)
+		return ;
+	i = -1;
+	while (++i < px->n_cmds - 1)
 	{
-		if (pipes[i])
+		if (px->pipes[i][0] != -1)
 		{
-			close(pipes[i][0]);
-			close(pipes[i][1]);
+			close(px->pipes[i][0]);
+			px->pipes[i][0] = -1;
 		}
-		i++;
+		if (px->pipes[i][1] != -1)
+		{
+			close(px->pipes[i][1]);
+			px->pipes[i][1] = -1;
+		}
 	}
-}
-
-void	close_files(int *infile, int *outfile)
-{
-	if (*infile >= 0 && *infile != STDIN_FILENO)
-		close(*infile);
-	if (*outfile >= 0 && *outfile != STDOUT_FILENO)
-		close(*outfile);
-	*infile = -1;
-	*outfile = -1;
 }
 
 void	*free_pipex(t_pipex *px)
 {
 	if (!px)
 		return (NULL);
-	close_files(&px->infile, &px->outfile);
+	if (px->infile)
+		free(px->infile);
+	if (px->outfile)
+		free(px->outfile);
 	if (px->head)
-		free_cmds(px->head);
+		free_commands(px->head);
 	if (px->pipes)
+	{
+		close_pipes(px);
 		free(px->pipes);
-	if (px->pids)
+	}
+	if (px->pipes)
 		free(px->pids);
 	free(px);
 	return (NULL);
 }
 
-void	error(char *type, char *message, char *exit_code, t_pipex *px)
-{
-	if (px)
-		free_pipex(px);
-	ft_putstr_fd(type, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putendl_fd(message, 2);
-	if (exit_code)
-		exit(ft_atoi(exit_code));
-}
-
-int	**create_pipes(int n_cmds)
+void	create_pipes(t_pipex *px)
 {
 	int	i;
 	int	*fds;
-	int	**pipes;
+	int	n_pipes;
 
-	pipes = malloc((sizeof(int *) * (n_cmds - 1)) + (sizeof(int) * 2 * (n_cmds
-					- 1)));
-	if (!pipes)
-		return (NULL);
-	fds = (int *)(pipes + (n_cmds - 1));
+	n_pipes = px->n_cmds - 1;
+	px->pipes = malloc((sizeof(int *) * n_pipes) + (sizeof(int) * 2 * n_pipes));
+	if (!px->pipes)
+		return ;
+	fds = (int *)(px->pipes + n_pipes);
 	i = -1;
-	while (++i < (n_cmds - 1))
+	while (++i < n_pipes)
 	{
-		pipes[i] = &fds[i * 2];
-		if (pipe(pipes[i]) == -1)
-			return (close_pipes(pipes, i), free(pipes), NULL);
+		px->pipes[i] = &fds[i * 2];
+		if (pipe(px->pipes[i]) == -1)
+		{
+			close_pipes(px);
+			free_pipex(px);
+			return ;
+		}
 	}
-	return (pipes);
+}
+
+t_pipex	*init_pipex(int ac, char **av)
+{
+	t_pipex	*px;
+
+	px = ft_calloc(1, sizeof(t_pipex));
+	if (!px)
+		return (free_pipex(px));
+	normal_or_heredoc(px, &ac, &av);
+	if (px->here_doc == -1)
+	{
+		px->infile = ft_strdup(av[0]);
+		if (!px->infile)
+			return (free_pipex(px));
+	}
+	px->outfile = ft_strdup(av[ac - 1]);
+	if (!px->outfile)
+		return (free_pipex(px));
+	px->head = create_commands(ac - 1, av + 1);
+	if (!px->head)
+		return (free_pipex(px));
+	px->n_cmds = count_commands(px->head);
+	create_pipes(px);
+	if (!px->pipes)
+		return (free_pipex(px));
+	return (px);
 }

@@ -5,91 +5,62 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/09 18:23:34 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/26 11:55:08 by sgadinga         ###   ########.fr       */
+/*   Created: 2025/05/27 17:14:56 by sgadinga          #+#    #+#             */
+/*   Updated: 2025/05/27 23:18:05 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <pipex.h>
 
-void	*free_array(char **array)
+void	*free_tokens(char **tokens)
 {
 	int	i;
 
-	if (!array)
-		return (NULL);
 	i = 0;
-	while (array[i])
-		free(array[i++]);
-	free(array);
+	if (!tokens)
+		return (NULL);
+	while (tokens[i])
+		free(tokens[i++]);
+	free(tokens);
 	return (NULL);
 }
 
-char	*ft_strjoinv(int n, ...)
+static char	*find_path_var(char **env)
 {
-	int		i;
-	char	*res;
-	va_list	args;
-	size_t	total_len;
-
-	if (n <= 0)
-		return (NULL);
-	va_start(args, n);
-	total_len = 0;
-	i = -1;
-	while (++i < n)
-		total_len += ft_strlen(va_arg(args, char *));
-	va_end(args);
-	res = malloc(total_len + 1);
-	if (!res)
-		return (NULL);
-	res[0] = '\0';
-	va_start(args, n);
-	i = -1;
-	while (++i < n)
-		ft_strlcat(res, va_arg(args, char *), total_len + 1);
-	va_end(args);
-	return (res);
-}
-
-char	*find_path(char **envp)
-{
-	int	i;
-
-	i = -1;
-	while (envp[++i])
+	while (*env)
 	{
-		if (!ft_strncmp(envp[i], "PATH=", 5))
-			return (ft_strdup(envp[i] + 5));
+		if (!ft_strncmp("PATH=", *env, 5))
+			return (ft_strdup(*env + 5));
+		env++;
 	}
 	return (NULL);
 }
 
-char	*find_cmd_path(char *cmd, char **envp)
+char	*find_cmd_path(char *cmd, char **env)
 {
 	int		i;
-	char	*path;
-	char	**array;
-	char	*full_path;
+	char	**paths;
+	char	*path_var;
+	char	*cmd_path;
 
-	if (!cmd || !envp)
+	if (!cmd || !*cmd || !env || !*env)
 		return (NULL);
-	path = find_path(envp);
-	if (!path)
+	path_var = find_path_var(env);
+	if (!path_var)
 		return (NULL);
-	array = ft_split(path, ':');
-	free(path);
-	if (!array)
+	paths = ft_split(path_var, ':');
+	free(path_var);
+	if (!paths)
 		return (NULL);
 	i = -1;
-	while (array[++i])
+	while (paths[++i])
 	{
-		full_path = ft_strjoinv(3, array[i], "/", cmd);
-		if (!full_path)
-			return (free_array(array));
-		if (access(full_path, X_OK) == 0)
-			return (free_array(array), full_path);
-		free(full_path);
+		cmd_path = ft_strvjoin(2, "/", paths[i], cmd);
+		if (!cmd_path)
+			return (free_tokens(paths));
+		if (!access(cmd_path, X_OK))
+			return (free_tokens(paths), cmd_path);
+		free(cmd_path);
 	}
-	return (free_array(array));
+	return (free_tokens(paths));
 }

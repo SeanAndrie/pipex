@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sgadinga <sgadinga@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 15:03:33 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/04/03 21:47:04 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/27 18:05:58 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define LIBFT_H
 
 # include "ft_printf.h"
+
 # include <stdlib.h>
 # include <unistd.h>
 # include <limits.h>
@@ -61,5 +62,6 @@ char				*ft_strjoin(const char *s1, const char *s2);
 char				*ft_strtrim(const char *s, const char *set);
 char				**ft_split(const char *s, char c);
 char				*ft_strmapi(const char *c, char (*f)(unsigned int, char));
+char				*ft_strvjoin(int n, char *sep, ...);
 
 #endif
