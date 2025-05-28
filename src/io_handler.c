@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 19:31:16 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/28 16:20:21 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/28 17:16:22 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ void	set_infile(t_pipex *px)
 		cleanup_fds(px, 1);
 		exit_on_err("dup2", "infile failed.", 1);
 	}
-	if (px->here_doc == -1)
-		close(fd);
+	close(fd);
 }
 
 void	set_outfile(t_pipex *px)
