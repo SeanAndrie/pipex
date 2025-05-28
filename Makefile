@@ -6,7 +6,7 @@
 #    By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/27 15:43:34 by sgadinga          #+#    #+#              #
-#    Updated: 2025/05/28 16:01:01 by sgadinga         ###   ########.fr        #
+#    Updated: 2025/05/28 16:43:25 by sgadinga         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,10 +30,10 @@ all: libft $(NAME)
 libft:
 	@make -C libft
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) libft
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -Llibft -lft
 
-bonus: $(BOBJS)
+bonus: $(BOBJS) libft
 	$(CC) $(CFLAGS) -o $(BONUS) $(BOBJS) -Llibft -lft
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
