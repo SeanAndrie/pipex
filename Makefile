@@ -6,7 +6,7 @@
 #    By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/27 15:43:34 by sgadinga          #+#    #+#              #
-#    Updated: 2025/05/28 16:43:25 by sgadinga         ###   ########.fr        #
+#    Updated: 2025/05/28 16:45:09 by sgadinga         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ all: libft $(NAME)
 libft:
 	@make -C libft
 
-$(NAME): $(OBJS) libft
+$(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -Llibft -lft
 
 bonus: $(BOBJS) libft
