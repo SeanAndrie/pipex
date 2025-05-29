@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 02:00:19 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/28 16:02:45 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:38:31 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,16 @@
 
 int	is_delim(char *line, char *limiter)
 {
-	return ((limiter[0] == '\0' || limiter[0] == '\n') || (!limiter[0] == '\0'
-			&& !ft_strncmp(line, limiter, ft_strlen(limiter))));
+	size_t	limit_len;
+
+	limit_len = ft_strlen(limiter);
+	if ((ft_strlen(line) - 1) == ft_strlen(limiter))
+	{
+		return ((limiter[0] == '\0' || limiter[0] == '\n')
+			|| (limiter[0] != '\0' && !ft_strncmp(line, limiter,
+					limit_len)));
+	}
+	return (0);
 }
 
 int	process_heredoc(char *limiter)

@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 18:42:08 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/28 14:42:58 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:47:29 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,13 @@ int	exec_w_execve(char *cmd, char **env)
 	if (ft_strchr(*args, '/'))
 	{
 		if (access(*args, X_OK) == -1)
-			return (free_tokens(args), 0);
+			return (errno = ENOENT, free_tokens(args), 0);
 		execve(*args, args, env);
 		return (free_tokens(args), 0);
 	}
 	cmd_path = find_cmd_path(*args, env);
 	if (!cmd_path)
-		return (free_tokens(args), 0);
+		return (errno = ENOENT, free_tokens(args), 0);
 	execve(cmd_path, args, env);
 	return (free(cmd_path), free_tokens(args), 0);
 }

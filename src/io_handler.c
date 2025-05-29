@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 19:31:16 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/28 17:16:22 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/29 16:43:15 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,8 @@ void	set_infile(t_pipex *px)
 	{
 		ft_putstr_fd("pipex: ", STDERR_FILENO);
 		perror(px->infile);
-		fd = open("/dev/null", O_RDONLY);
-		if (fd < 0)
-		{
-			cleanup_fds(px, 1);
-			exit_on_err("dup2", "/dev/null fallback failed.", 1);
-		}
+		cleanup_fds(px, 1);
+		exit(EXIT_FAILURE);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{

@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 16:17:41 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/05/28 16:22:18 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/05/29 20:33:21 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,14 @@
 
 void	cleanup_fds(t_pipex *px, int free_px)
 {
-	if (px)
+	close_pipes(px);
+	if (px->here_doc != -1)
 	{
-		close_pipes(px);
-		if (px->here_doc != -1)
-		{
-			close(px->here_doc);
-			px->here_doc = -1;
-		}
-		if (free_px)
-			free_pipex(px);
+		close(px->here_doc);
+		px->here_doc = -1;
 	}
-	close(STDIN_FILENO);
-	close(STDOUT_FILENO);
+	if (free_px)
+		free_pipex(px);
 }
 
 void	close_pipes(t_pipex *px)
