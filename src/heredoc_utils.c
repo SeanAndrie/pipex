@@ -6,7 +6,7 @@
 /*   By: sgadinga <sgadinga@student.42abudhabi.ae>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 02:00:19 by sgadinga          #+#    #+#             */
-/*   Updated: 2025/06/02 13:08:13 by sgadinga         ###   ########.fr       */
+/*   Updated: 2025/06/02 13:40:25 by sgadinga         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	process_heredoc(char *limiter)
 	while (total_len < MAX_HEREDOC_SIZE)
 	{
 		ft_putstr_fd("heredoc> ", STDERR_FILENO);
-		line = get_next_line(STDERR_FILENO);
+		line = get_next_line(STDIN_FILENO);
 		if (!line)
 			break ;
 		if (is_delim(line, limiter) || total_len > MAX_HEREDOC_SIZE)
